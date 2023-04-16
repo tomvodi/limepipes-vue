@@ -8,7 +8,7 @@
       ></v-alert>
     </v-row>
     <div class="text-h3 pt-5">MusicSets</div>
-    <v-list lines="one">
+    <v-list>
       <v-list-item
         v-for="set in data"
         :key="set.id"

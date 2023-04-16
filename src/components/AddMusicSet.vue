@@ -3,28 +3,34 @@
     <v-form @submit.prevent="submit">
       <h2 class="text-2xl font-semibold mb-4">Create MusicSet</h2>
       <v-text-field
+        ref="titleInput"
         v-model="title"
         :error-messages="errors.title as string"
         label="Title"
         name="title"
       ></v-text-field>
       <v-text-field
+        ref="descriptionInput"
         v-model="description"
         :error-messages="errors.description as string"
         label="Decription"
         name="description"
       ></v-text-field>
       <v-text-field
+        ref="creatorInput"
         v-model="creator"
         :error-messages="errors.creator as string"
         label="Creator"
         name="creator"
       ></v-text-field>
       <v-row>
-        <v-btn @click="handleReset">
-          clear
+        <v-btn
+          ref="resetBtn"
+          @click="handleReset"
+        >Clear
         </v-btn>
         <v-btn
+          ref="submitBtn"
           type="submit"
         >Create MusicSet
         </v-btn>
@@ -43,7 +49,7 @@ import {CreateSet} from "@/api-client";
 const emit = defineEmits(['newMusicSet'])
 const createMusicSetSchema = toTypedSchema(
   zod.object({
-    title: zod.string().min(1, 'Title is required'),
+    title: zod.string({required_error: 'Title is required'}),
     description: zod.string().optional(),
     creator: zod.string().optional(),
   })
