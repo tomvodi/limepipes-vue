@@ -1,5 +1,6 @@
 import {ApiClient, Configuration, DefaultApiFactory} from "@/api-client";
 import {App} from "vue";
+import {apiClientInjKey} from "@/injection_keys";
 
 
 export function setupApiClient(app: App) {
@@ -9,5 +10,5 @@ export function setupApiClient(app: App) {
 
   const apiClient
     = DefaultApiFactory(apiConfig)
-  app.provide<ApiClient>('apiClient', apiClient)
+  app.provide<ApiClient>(apiClientInjKey, apiClient)
 }

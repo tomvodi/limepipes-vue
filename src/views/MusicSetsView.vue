@@ -70,11 +70,12 @@ import {useMusicSets} from "@/queries/music-sets";
 import {ApiClient, CreateSet} from "@/api-client";
 import {inject, ref} from "vue";
 import {useMutation, useQueryClient} from "@tanstack/vue-query";
+import {apiClientInjKey} from "@/injection_keys";
 
 const overlay = ref(false)
 const snackbarVisible = ref(false)
 const snackbarMessage = ref("")
-const apiClient: ApiClient = inject<ApiClient>('apiClient') as ApiClient
+const apiClient: ApiClient = inject<ApiClient>(apiClientInjKey) as ApiClient
 
 const {data, error, isLoading} = useMusicSets(apiClient);
 const queryClient = useQueryClient();
