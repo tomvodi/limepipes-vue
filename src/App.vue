@@ -4,6 +4,7 @@
     <v-navigation-drawer>
       <v-list>
         <v-list-item :to="'/'" title="Music Sets"></v-list-item>
+        <v-list-item :to="'/tunes'" title="Tunes"></v-list-item>
         <v-list-item :to="'/hello'" title="Hello"></v-list-item>
       </v-list>
     </v-navigation-drawer>

@@ -9,6 +9,11 @@ const routes = [
     component: MusicSetsView
   },
   {
+    path: '/tunes',
+    name: 'tunes',
+    component: () => import( '../views/TunesView.vue')
+  },
+  {
     path: '/hello',
     name: 'hello',
     component: () => import(/* webpackChunkName: "about" */ '../views/HelloWorldView.vue')
