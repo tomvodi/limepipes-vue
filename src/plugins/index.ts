@@ -7,13 +7,13 @@
 // Plugins
 import {loadFonts} from './webfontloader'
 import vuetify from './vuetify'
-import pinia from '../store'
 import router from '../router'
 
 // Types
 import type {App} from 'vue'
 import {setupApiClient} from "@/plugins/api-client";
 import {VueQueryPlugin} from "@tanstack/vue-query";
+import {createPinia} from "pinia";
 
 export function registerPlugins(app: App) {
   loadFonts()
@@ -21,6 +21,6 @@ export function registerPlugins(app: App) {
   app
     .use(vuetify)
     .use(router)
-    .use(pinia)
+    .use(createPinia())
     .use(VueQueryPlugin)
 }

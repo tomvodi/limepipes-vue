@@ -1,6 +1,6 @@
 import {beforeEach, describe, expect, it} from "vitest";
 import {mount, VueWrapper} from '@vue/test-utils'
-import AddMusicSet from "@/components/AddMusicSet.vue";
+import AddMusicSet from "@/components/AddOrUpdateMusicSet.vue";
 import {createVuetify} from "vuetify";
 import flushPromises from "flush-promises";
 import waitForExpect from "wait-for-expect";

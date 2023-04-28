@@ -1,7 +1,7 @@
 <template>
   <v-card id="main-card">
     <v-form @submit.prevent="submit">
-      <h2 class="text-2xl font-semibold mb-4">Create MusicSet</h2>
+      <h2 class="text-2xl font-semibold mb-4">{{ createOrAddText }}</h2>
       <v-text-field
         ref="titleInput"
         v-model="title"
@@ -32,7 +32,7 @@
         <v-btn
           ref="submitBtn"
           type="submit"
-        >Create MusicSet
+        >{{ createOrAddText }}
         </v-btn>
       </v-row>
     </v-form>
@@ -43,13 +43,27 @@
 import {useField, useForm} from 'vee-validate';
 import * as zod from 'zod';
 import {toTypedSchema} from '@vee-validate/zod';
-import {CreateSet} from "@/api-client";
+import {CreateSet, MusicSet} from "@/api-client";
+import {computed, onMounted} from "vue";
 
+const props = defineProps({
+  updateSet: {type: Object as () => MusicSet}
+})
 
-const emit = defineEmits(['newMusicSet'])
+onMounted(() => {
+  if (props.updateSet != undefined) {
+    const set = props.updateSet
+    title.value = set.title
+    description.value = set.description as string
+    creator.value = set.creator as string
+  }
+})
+
+const emit = defineEmits(['newMusicSet', 'updateMusicSet'])
+
 const createMusicSetSchema = toTypedSchema(
   zod.object({
-    title: zod.string({required_error: 'Title is required'}),
+    title: zod.string({required_error: 'Title is required'}).trim().min(1),
     description: zod.string().optional(),
     creator: zod.string().optional(),
   })
@@ -62,10 +76,21 @@ const {value: description} = useField<string>('description');
 const {value: creator} = useField<string>('creator');
 
 const submit = handleSubmit(values => {
-  const createSetData = {...values} as CreateSet
-  emit('newMusicSet', createSetData)
+  if (props.updateSet?.id == undefined) {
+    const createSetData = {...values} as CreateSet
+    emit('newMusicSet', createSetData)
+  } else {
+    const updateSetData = {...values} as MusicSet
+    updateSetData.id = props.updateSet?.id as number
+    emit('updateMusicSet', updateSetData)
+  }
+
   resetForm();
 });
+
+const createOrAddText = computed(() => {
+  return props.updateSet?.id == undefined ? 'Create MusicSet' : 'Update MusicSet'
+})
 
 </script>
 <style scoped>

@@ -9,13 +9,11 @@
     </v-row>
     <div class="text-h3 pt-5">MusicSets</div>
     <v-list>
-      <v-list-item
+      <MusicSetListItem
         v-for="set in data"
-        :key="set.id"
-        :subtitle="set.description"
-        :title="set.title"
-      >
-      </v-list-item>
+        :musicSet="set"
+        @edit-music-set="initEdit"
+      ></MusicSetListItem>
     </v-list>
 
     <v-progress-circular
@@ -34,18 +32,22 @@
         elevation="2"
         fab
         text
-        @click="showAddMusicSet"
+        @click="addOrUpdateInProgress = true"
       >Add MusicSet
       </v-btn>
     </v-row>
-
   </v-container>
   <v-overlay
-    v-model="overlay"
+    v-model="addOrUpdateInProgress"
     class="align-center justify-center"
     contained
+    @after-leave="store.finishUpdate()"
   >
-    <AddMusicSet @new-music-set="createMusicSet"></AddMusicSet>
+    <AddMusicSet
+      :update-set="updateSet"
+      @new-music-set="createMusicSet"
+      @update-music-set="updateMusicSet"
+    ></AddMusicSet>
   </v-overlay>
   <v-snackbar
     v-model="snackbarVisible"
@@ -65,14 +67,18 @@
 </template>
 
 <script lang="ts" setup>
-import AddMusicSet from "@/components/AddMusicSet.vue";
+import AddMusicSet from "@/components/AddOrUpdateMusicSet.vue";
 import {useMusicSets} from "@/queries/music-sets";
-import {ApiClient, CreateSet} from "@/api-client";
+import {ApiClient, CreateSet, MusicSet, UpdateSet} from "@/api-client";
 import {inject, ref} from "vue";
 import {useMutation, useQueryClient} from "@tanstack/vue-query";
 import {apiClientInjKey} from "@/injection_keys";
+import MusicSetListItem from "@/components/MusicSetListItem.vue";
+import {useMusicSetStore} from "@/store/music_set";
+import {storeToRefs} from "pinia";
 
-const overlay = ref(false)
+const store = useMusicSetStore()
+const {addOrUpdateInProgress, updateSet} = storeToRefs(store)
 const snackbarVisible = ref(false)
 const snackbarMessage = ref("")
 const apiClient: ApiClient = inject<ApiClient>(apiClientInjKey) as ApiClient
@@ -83,12 +89,12 @@ const {mutate: createMusicSet} = useMutation(
   (formData: CreateSet) => apiClient.createSet(formData),
   {
     onSuccess: (data) => {
-      overlay.value = false
+      addOrUpdateInProgress.value = false
       showToast('Music Set created successfully')
       queryClient.invalidateQueries({queryKey: ['music-sets']});
     },
     onError: (error: any) => {
-      overlay.value = false
+      addOrUpdateInProgress.value = false
       if (Array.isArray((error as any).response.data.error)) {
         (error as any).response.data.error.forEach((el: any) =>
           showToast(el.message)
@@ -100,8 +106,30 @@ const {mutate: createMusicSet} = useMutation(
   }
 );
 
-function showAddMusicSet() {
-  overlay.value = true
+const {mutate: updateMusicSet} = useMutation(
+  (formData: MusicSet) => apiClient.updateSet(formData.id, formData as UpdateSet),
+  {
+    onSuccess: (data) => {
+      store.finishUpdate()
+      showToast('Music Set updated successfully')
+      queryClient.invalidateQueries({queryKey: ['music-sets']});
+    },
+    onError: (error: any) => {
+      store.finishUpdate()
+      if (Array.isArray((error as any).response.data.error)) {
+        (error as any).response.data.error.forEach((el: any) =>
+          showToast(el.message)
+        );
+      } else {
+        showToast((error as any).response.data.message)
+      }
+    },
+  }
+);
+
+const initEdit = (musicSet: MusicSet) => {
+  updateSet.value = musicSet
+  addOrUpdateInProgress.value = true
 }
 
 const showToast = (message: string) => {
