@@ -24,6 +24,12 @@
         name="creator"
       ></v-text-field>
       <v-row>
+        <set-tunes-edit
+          :set-tunes="setTunes"
+          @tunes-order-changed="changeSetTunes">
+        </set-tunes-edit>
+      </v-row>
+      <v-row>
         <v-btn
           ref="resetBtn"
           @click="handleReset"
@@ -43,8 +49,9 @@
 import {useField, useForm} from 'vee-validate';
 import * as zod from 'zod';
 import {toTypedSchema} from '@vee-validate/zod';
-import {CreateSet, MusicSet} from "@/api-client";
-import {computed, onMounted} from "vue";
+import {CreateSet, MusicSet, Tune} from "@/api-client";
+import {computed, onMounted, ref} from "vue";
+import SetTunesEdit from "@/components/MusicSetTunesEdit.vue";
 
 const props = defineProps({
   updateSet: {type: Object as () => MusicSet}
@@ -56,6 +63,7 @@ onMounted(() => {
     title.value = set.title
     description.value = set.description as string
     creator.value = set.creator as string
+    setTunes.value = set.tunes as Tune[]
   }
 })
 
@@ -74,19 +82,26 @@ const {errors, resetForm, handleReset, handleSubmit} = useForm({
 const {value: title} = useField<string>('title');
 const {value: description} = useField<string>('description');
 const {value: creator} = useField<string>('creator');
+const setTunes = ref(new Array<Tune>);
 
 const submit = handleSubmit(values => {
   if (props.updateSet?.id == undefined) {
     const createSetData = {...values} as CreateSet
+    createSetData.tunes = setTunes.value.map((tune: Tune) => tune.id)
     emit('newMusicSet', createSetData)
   } else {
     const updateSetData = {...values} as MusicSet
     updateSetData.id = props.updateSet?.id as number
+    updateSetData.tunes = setTunes.value.map((tune: Tune) => tune.id)
     emit('updateMusicSet', updateSetData)
   }
 
   resetForm();
 });
+
+const changeSetTunes = (newTunes: Tune[]) => {
+  setTunes.value = newTunes
+}
 
 const createOrAddText = computed(() => {
   return props.updateSet?.id == undefined ? 'Create MusicSet' : 'Update MusicSet'

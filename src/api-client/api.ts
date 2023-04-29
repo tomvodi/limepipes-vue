@@ -68,6 +68,12 @@ export interface CreateSet {
      * @memberof CreateSet
      */
     creator?: string;
+    /**
+     * 
+     * @type {Array<number>}
+     * @memberof CreateSet
+     */
+    tunes?: Array<number>;
 }
 /**
  * 
@@ -105,6 +111,50 @@ export interface CreateTune {
      * @memberof CreateTune
      */
     arranger?: string;
+}
+/**
+ * 
+ * @export
+ * @interface CreateUpdateSetProperties
+ */
+export interface CreateUpdateSetProperties {
+    /**
+     * The name of the Set
+     * @type {string}
+     * @memberof CreateUpdateSetProperties
+     */
+    title: string;
+    /**
+     * A description of the Set
+     * @type {string}
+     * @memberof CreateUpdateSetProperties
+     */
+    description?: string;
+    /**
+     * The name of the creator of the set
+     * @type {string}
+     * @memberof CreateUpdateSetProperties
+     */
+    creator?: string;
+    /**
+     * 
+     * @type {Array<number>}
+     * @memberof CreateUpdateSetProperties
+     */
+    tunes?: Array<number>;
+}
+/**
+ * 
+ * @export
+ * @interface CreateUpdateSetPropertiesAllOf
+ */
+export interface CreateUpdateSetPropertiesAllOf {
+    /**
+     * 
+     * @type {Array<number>}
+     * @memberof CreateUpdateSetPropertiesAllOf
+     */
+    tunes?: Array<number>;
 }
 /**
  * 
@@ -323,6 +373,12 @@ export interface UpdateSet {
      * @memberof UpdateSet
      */
     creator?: string;
+    /**
+     * 
+     * @type {Array<number>}
+     * @memberof UpdateSet
+     */
+    tunes?: Array<number>;
 }
 /**
  * 

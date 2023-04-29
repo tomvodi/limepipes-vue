@@ -10,7 +10,7 @@
     </template>
     <template v-slot:subtitle>
       <v-row>
-        <v-col>{{ musicSet.tunes.length }} tunes</v-col>
+        <v-col>{{ musicSet.tunes?.length }} tunes</v-col>
         <v-col>{{ musicSet.description }}</v-col>
       </v-row>
     </template>
