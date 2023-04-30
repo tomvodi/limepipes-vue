@@ -107,9 +107,11 @@ const createOrAddText = computed(() => {
   return props.updateSet?.id == undefined ? 'Create MusicSet' : 'Update MusicSet'
 })
 
+
 </script>
 <style scoped>
 #main-card {
   padding: 25px;
+  min-width: 500px;
 }
 </style>

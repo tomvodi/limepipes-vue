@@ -43,11 +43,11 @@
     contained
     @after-leave="store.finishUpdate()"
   >
-    <AddMusicSet
+    <AddOrUpdateMusicSet
       :update-set="updateSet"
       @new-music-set="createMusicSet"
       @update-music-set="updateMusicSet"
-    ></AddMusicSet>
+    ></AddOrUpdateMusicSet>
   </v-overlay>
   <v-snackbar
     v-model="snackbarVisible"
@@ -67,7 +67,7 @@
 </template>
 
 <script lang="ts" setup>
-import AddMusicSet from "@/components/AddOrUpdateMusicSet.vue";
+
 import {useMusicSets} from "@/queries/music-sets";
 import {ApiClient, CreateSet, MusicSet, UpdateSet} from "@/api-client";
 import {inject, ref} from "vue";
@@ -76,6 +76,7 @@ import {apiClientInjKey} from "@/injection_keys";
 import MusicSetListItem from "@/components/MusicSetListItem.vue";
 import {useMusicSetStore} from "@/store/music_set";
 import {storeToRefs} from "pinia";
+import AddOrUpdateMusicSet from "@/components/AddOrUpdateMusicSet.vue";
 
 const store = useMusicSetStore()
 const {addOrUpdateInProgress, updateSet} = storeToRefs(store)
