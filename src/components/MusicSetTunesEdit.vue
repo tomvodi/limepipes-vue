@@ -1,9 +1,12 @@
 <template>
   <v-container>
     <v-row v-for="(tune, index) in setTunes"
-           class="pb-2" justify="start" no-gutters>
+           class="pb-2 tune-sort-row"
+           justify="start"
+           no-gutters>
       <v-col cols="1">
         <v-btn v-if="index != 0"
+               class="up-button"
                density="compact"
                icon="mdi-arrow-up-thin"
                variant="outlined"
@@ -12,6 +15,7 @@
       </v-col>
       <v-col cols="1">
         <v-btn v-if="index < setTunes?.length - 1"
+               class="down-button"
                density="compact"
                icon="mdi-arrow-down-thin"
                variant="outlined"
@@ -24,6 +28,7 @@
       <v-spacer></v-spacer>
       <v-col cols="1">
         <v-btn
+          class="delete-button"
           density="compact"
           icon="mdi-delete-outline"
           variant="outlined"
@@ -34,7 +39,8 @@
     <v-row>
       <v-col cols="10">
         <v-combobox
-          v-model="selectedTunes"
+          ref="add-tune-select"
+          v-model="selectedTune"
           :items="allTunes"
           density="compact"
           item-text="title"
@@ -43,6 +49,8 @@
       </v-col>
       <v-col>
         <v-btn
+          ref="add-tune-button"
+          :disabled="addingTuneDisabled"
           density="compact"
           icon="mdi-plus"
           variant="outlined"
@@ -56,26 +64,34 @@
 
 <script lang="ts" setup>
 import {ApiClient, Tune} from "@/api-client";
-import {inject, ref, toRef, watch} from "vue";
+import {computed, inject, onMounted, ref, toRef, watchEffect} from "vue";
 import {apiClientInjKey} from "@/injection_keys";
 import {useTunes} from "@/queries/tunes";
 
 const emit = defineEmits(['tunesOrderChanged'])
 const props = defineProps({
-  setTunes: {type: Object as () => Tune[]}
+  setTunes: Array<Tune>
 })
 const setTunes = ref([] as Tune[])
 const setTunesRo = toRef(props, 'setTunes');
-watch(setTunesRo, (value) => {
+watchEffect(() => {
   if (setTunesRo.value == undefined) {
     return
   }
   setTunes.value = setTunesRo.value;
 });
-
 const apiClient: ApiClient = inject<ApiClient>(apiClientInjKey) as ApiClient
 const {data: allTunes} = useTunes(apiClient);
-const selectedTunes = ref<Tune[]>([])
+const selectedTune = ref<Tune | null>(null)
+
+
+onMounted(() => {
+  console.log(selectedTune.value)
+})
+
+const addingTuneDisabled = computed(() => {
+  return selectedTune.value == null
+})
 
 const tuneUp = (index: number) => {
   moveTune(index, index - 1)
@@ -88,10 +104,13 @@ const tuneDown = (index: number) => {
 }
 
 const tuneAdd = () => {
-  let tmpTunes = [...setTunes.value]
-  tmpTunes.push(selectedTunes.value)
+  if (selectedTune.value == null) {
+    return
+  }
+  let tmpTunes = [...(setTunes.value)]
+  tmpTunes.push(selectedTune.value)
   setTunes.value = tmpTunes
-  selectedTunes.value = []
+  selectedTune.value = null
   emit('tunesOrderChanged', setTunes.value)
 }
 

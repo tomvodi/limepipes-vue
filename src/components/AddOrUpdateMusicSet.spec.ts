@@ -1,20 +1,24 @@
 import {beforeEach, describe, expect, it} from "vitest";
 import {mount, VueWrapper} from '@vue/test-utils'
-import AddMusicSet from "@/components/AddOrUpdateMusicSet.vue";
+import AddOrUpdateMusicSet from "@/components/AddOrUpdateMusicSet.vue";
 import {createVuetify} from "vuetify";
 import flushPromises from "flush-promises";
 import waitForExpect from "wait-for-expect";
 import {CreateSet} from "@/api-client";
+import {apiClientInjKey} from "@/injection_keys";
+import {VueQueryPlugin} from "@tanstack/vue-query";
 
 
-describe('AddMusicSet', () => {
+describe('AddOrUpdateMusicSet', () => {
   const vuetify = createVuetify()
   let wrapper: VueWrapper<any>, titleInput: VueWrapper<any>, descriptionInput: VueWrapper<any>,
     creatorInput: VueWrapper<any>
 
+  const metaApiClient = {}
   beforeEach(() => {
-    wrapper = mount(AddMusicSet, {
-      global: {plugins: [vuetify]}
+    wrapper = mount(AddOrUpdateMusicSet, {
+      global: {plugins: [vuetify, VueQueryPlugin]},
+      provide: {[apiClientInjKey]: metaApiClient}
     })
     titleInput = wrapper.findComponent({ref: 'titleInput'})
     descriptionInput = wrapper.findComponent({ref: 'descriptionInput'})
